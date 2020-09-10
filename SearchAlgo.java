@@ -13,6 +13,7 @@ public class SearchAlgo {
         System.out.println("1: Brute Force");
         System.out.println("2: Boyers Moore");
         System.out.println("3: BNDM");
+        System.out.println("4: KMP");
 
         choice = sc.nextInt();
         switch (choice) {
@@ -24,6 +25,9 @@ public class SearchAlgo {
                 main(args);
             case 3:
                 BNDM(file, input);
+                main(args);
+            case 4:
+                KMP(file,input);
                 main(args);
             default:
                 sc.close();
@@ -94,7 +98,6 @@ public class SearchAlgo {
             if (pattern_index < 0) { //--- Mismatch ---//
                 System.out.println("Patterns occur at index = " + length_index);
                 length_index += (length_index + patternlength < filelength) ? patternlength - badchar[file.charAt(length_index + patternlength)] : 1;
-
             } else
                 length_index += max(1, pattern_index - badchar[file.charAt(length_index + pattern_index)]);
         }
@@ -130,7 +133,7 @@ public class SearchAlgo {
             b[i] = 0;
         }
         s = 1;
-        //-------- Set pattern index within main file/text -----------
+        //-------- Set pattern to bitwise -----------
         for (i = m - 1; i >= 0; i--) {
             b[x[i]] |= s;
             s <<= 1;
@@ -159,5 +162,76 @@ public class SearchAlgo {
         long elapsedTime = end - start;
         System.out.println("Time Taken for BNDM: " + elapsedTime);
     }
+//--------------------------------------- KMP --------------------------------------------------
 
+static void computeLPSArray(String pat, int M, int lps[]) 
+{ 
+    // length of the previous longest prefix suffix 
+    int len = 0; 
+    int i = 1; 
+    lps[0] = 0; // lps[0] is always 0 
+
+    // the loop calculates lps[i] for i = 1 to M-1 
+    while (i < M) { 
+        if (pat.charAt(i) == pat.charAt(len)) { 
+            len++; 
+            lps[i] = len; 
+            i++; 
+        } 
+        else // (pat[i] != pat[len]) 
+        { 
+            // This is tricky. Consider the example. 
+            // AAACAAAA and i = 7. The idea is similar 
+            // to search step. 
+            if (len != 0) { 
+                len = lps[len - 1]; 
+
+                // Also, note that we do not increment 
+                // i here 
+            } 
+            else // if (len == 0) 
+            { 
+                lps[i] = len; 
+                i++; 
+            } 
+        } 
+    } 
+} 
+    public static void KMP(String file, String pattern) {
+        int M = pattern.length(); 
+        int N = file.length(); 
+  
+        // create lps[] that will hold the longest 
+        // prefix suffix values for pattern 
+        int lps[] = new int[M]; 
+        int j = 0; // index for pat[] 
+  
+        // Preprocess the pattern (calculate lps[] 
+        // array) 
+        computeLPSArray(pattern, M, lps); 
+  
+        int i = 0; // index for txt[] 
+        while (i < N) { 
+            if (pattern.charAt(j) == file.charAt(i)) { 
+                j++; 
+                i++; 
+            } 
+            if (j == M) { 
+                System.out.println("Found pattern "
+                                   + "at index " + (i - j)); 
+                j = lps[j - 1]; 
+            } 
+  
+            // mismatch after j matches 
+            else if (i < N && pattern.charAt(j) != file.charAt(i)) { 
+                // Do not match lps[0..lps[j-1]] characters, 
+                // they will match anyway 
+                if (j != 0) 
+                    j = lps[j - 1]; 
+                else
+                    i = i + 1; 
+            } 
+        } 
+    }
+    
 }
