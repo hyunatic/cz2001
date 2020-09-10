@@ -26,11 +26,11 @@ public class SearchAlgo {
                 BNDM(file, input);
                 main(args);
             default:
+                sc.close();
                 System.exit(0);
-        }
-
-    }
-
+        }  
+    };
+// -------------- Reading external text file ---------//
     public static String ReadFile() throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader("Testing.txt"));
         StringBuilder stringBuilder = new StringBuilder();
@@ -47,7 +47,7 @@ public class SearchAlgo {
             return stringBuilder.toString();
         }
     }
-
+//------------------------------------ Brute Force ----------------------------------------------------------//
     public static void BruteForce(String text, String input) {
         long start = System.nanoTime();
 
@@ -62,45 +62,47 @@ public class SearchAlgo {
         long elapsedTime = end - start;
         System.out.println("Time Taken for Brute Force: " + elapsedTime);
     }
+//---------------------------------------------- Boyers Moore -------------------------------------------------//
 
-    static int max(int a, int b) {
+    static int max(int a, int b) { // Return Num of pattern found in file
         return (a > b) ? a : b;
     }
-
+// shifting of the pattern to the "right" of the text
     static void badCharHeuristic(char[] str, int size, int badchar[]) {
         int i;
+        //reset placement of all to -1 index
         for (i = 0; i < 256; i++)
             badchar[i] = -1;
-
+        //set pattern position
         for (i = 0; i < size; i++)
             badchar[(int) str[i]] = i;
     }
 
-    public static void BoyersMoore(String text, String input) {
+    public static void BoyersMoore(String file, String pattern) {
         long start = System.nanoTime();
-        int m = input.length();
-        int n = text.length();
+        int patternlength = pattern.length();
+        int filelength = file.length();
 
         int badchar[] = new int[256];
-        badCharHeuristic(input.toCharArray(), m, badchar);
-        int s = 0;
+        badCharHeuristic(pattern.toCharArray(), patternlength, badchar);
+        int length_index = 0;
 
-        while (s <= (n - m)) {
-            int j = m - 1;
-            while (j >= 0 && input.charAt(j) == text.charAt(s + j))
-                j--;
-            if (j < 0) {
-                System.out.println("Patterns occur at index = " + s);
-                s += (s + m < n) ? m - badchar[text.charAt(s + m)] : 1;
+        while (length_index <= (filelength - patternlength)) {
+            int pattern_index = patternlength - 1;
+            while (pattern_index >= 0 && pattern.charAt(pattern_index) == file.charAt(length_index + pattern_index) && pattern.charAt(0) == file.charAt(length_index)) //--- Match ---//
+                pattern_index--;
+            if (pattern_index < 0) { //--- Mismatch ---//
+                System.out.println("Patterns occur at index = " + length_index);
+                length_index += (length_index + patternlength < filelength) ? patternlength - badchar[file.charAt(length_index + patternlength)] : 1;
 
             } else
-                s += max(1, j - badchar[text.charAt(s + j)]);
+                length_index += max(1, pattern_index - badchar[file.charAt(length_index + pattern_index)]);
         }
         long end = System.nanoTime();
         long elapsedTime = end - start;
         System.out.println("Time Taken for Boyers Moore: " + elapsedTime);
     }
-
+//------------------------------------------------------- BNDM ------------------------------------------------------
     public static void printLastOcc(int[] lastOcc) {
         int i, j = 0;
 
@@ -114,20 +116,21 @@ public class SearchAlgo {
         System.out.println();
     }
 
-    public static void BNDM(String text, String input) {
+    public static void BNDM(String file, String pattern) {
         long start = System.nanoTime();
-        if (input.length() == text.length() && input.equals(text)) {
+        if (pattern.length() == file.length() && pattern.equals(file)) {
             System.out.println("Sequence = Source");
         }
 
-        char[] x = input.toCharArray(), y = text.toCharArray();
+        char[] x = pattern.toCharArray(), y = pattern.toCharArray();
         int i, j, s, d, last, m = x.length, n = y.length;
         int[] b = new int[256];
-
+        //----- initalize empty list with 0
         for (i = 0; i < b.length; i++) {
             b[i] = 0;
         }
         s = 1;
+        //-------- Set pattern index within main file/text -----------
         for (i = m - 1; i >= 0; i--) {
             b[x[i]] |= s;
             s <<= 1;
