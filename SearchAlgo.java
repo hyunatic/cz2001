@@ -2,11 +2,11 @@ import java.io.*;
 import java.util.Scanner;
 
 public class SearchAlgo {
-    interface CreateIntFunction {
+    interface CreateIntReturnFunction {
         public int Run(int a, int b);
     }
 
-    interface CreateVoidFunction {
+    interface CreateVoidReturnFunction {
         public void Run(String a, int b, int c[]);
     }
 
@@ -85,7 +85,7 @@ public class SearchAlgo {
         // Create a function to shift pattern to the right when character is mismatched
         // (Java 8 Style)
         // shifting of the pattern to the "right" of the text
-        CreateVoidFunction charShifter = (str, size, badchar) -> {
+        CreateVoidReturnFunction charShifter = (str, size, badchar) -> {
             int i;
 
             char[] strArray = str.toCharArray();
@@ -97,7 +97,7 @@ public class SearchAlgo {
                 badchar[(int) strArray[i]] = i;
         };
         // Create a function find the Bigger number between 2 numbers (Java 8 Style)
-        CreateIntFunction FindMaxNum = (x, y) -> (x > y) ? x : y;
+        CreateIntReturnFunction FindMaxNum = (x, y) -> (x > y) ? x : y;
 
         long start = System.nanoTime();
         int patternlength = pattern.length();
@@ -129,7 +129,7 @@ public class SearchAlgo {
 
     public static void KMP(String file, String pattern) {
         //Create function to Find Sub Patterns in the text
-        CreateVoidFunction FindPrepocessingPattern = (pat, patternlength, lpsarr) -> {
+        CreateVoidReturnFunction FindPrepocessingPattern = (pat, patternlength, lpsarr) -> {
             // length of the previous longest prefix suffix
             int len = 0;
             int i = 1;
