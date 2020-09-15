@@ -2,6 +2,14 @@ import java.io.*;
 import java.util.Scanner;
 
 public class SearchAlgo {
+    interface CreateIntFunction {
+        public int Run(int a, int b);
+    }
+
+    interface CreateVoidFunction {
+        public void Run(String a, int b, int c[]);
+    }
+
     public static void main(String args[]) throws IOException {
         String file = ReadFile();
         Scanner sc = new Scanner(System.in);
@@ -12,8 +20,7 @@ public class SearchAlgo {
         System.out.println("Select Search Algorithm: ");
         System.out.println("1: Brute Force");
         System.out.println("2: Boyers Moore");
-        System.out.println("3: BNDM");
-        System.out.println("4: KMP");
+        System.out.println("3: KMP");
 
         choice = sc.nextInt();
         switch (choice) {
@@ -24,17 +31,16 @@ public class SearchAlgo {
                 BoyersMoore(file, input);
                 main(args);
             case 3:
-                BNDM(file, input);
+                KMP(file, input);
                 main(args);
-            case 4:
-                KMP(file,input);
-                main(args);
+
             default:
                 sc.close();
                 System.exit(0);
-        }  
+        }
     };
-// -------------- Reading external text file ---------//
+
+    // -------------- Reading external text file ---------//
     public static String ReadFile() throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader("Testing.txt"));
         StringBuilder stringBuilder = new StringBuilder();
@@ -51,7 +57,9 @@ public class SearchAlgo {
             return stringBuilder.toString();
         }
     }
-//------------------------------------ Brute Force ----------------------------------------------------------//
+
+    // ------------------------------------ Brute Force
+    // ----------------------------------------------------------//
     public static void BruteForce(String text, String input) {
         long start = System.nanoTime();
 
@@ -66,172 +74,126 @@ public class SearchAlgo {
         long elapsedTime = end - start;
         System.out.println("Time Taken for Brute Force: " + elapsedTime);
     }
-//---------------------------------------------- Boyers Moore -------------------------------------------------//
+    // ---------------------------------------------- Boyers Moore
+    // -------------------------------------------------//
 
     static int max(int a, int b) { // Return Num of pattern found in file
         return (a > b) ? a : b;
     }
-// shifting of the pattern to the "right" of the text
-    static void badCharHeuristic(char[] str, int size, int badchar[]) {
-        int i;
-        //reset placement of all to -1 index
-        for (i = 0; i < 256; i++)
-            badchar[i] = -1;
-        //set pattern position
-        for (i = 0; i < size; i++)
-            badchar[(int) str[i]] = i;
-    }
 
     public static void BoyersMoore(String file, String pattern) {
+        // Create a function to shift pattern to the right when character is mismatched
+        // (Java 8 Style)
+        // shifting of the pattern to the "right" of the text
+        CreateVoidFunction charShifter = (str, size, badchar) -> {
+            int i;
+
+            char[] strArray = str.toCharArray();
+            // reset placement of all to -1 index
+            for (i = 0; i < 256; i++)
+                badchar[i] = -1;
+            // set pattern position
+            for (i = 0; i < size; i++)
+                badchar[(int) strArray[i]] = i;
+        };
+        // Create a function find the Bigger number between 2 numbers (Java 8 Style)
+        CreateIntFunction FindMaxNum = (x, y) -> (x > y) ? x : y;
+
         long start = System.nanoTime();
         int patternlength = pattern.length();
         int filelength = file.length();
 
         int badchar[] = new int[256];
-        badCharHeuristic(pattern.toCharArray(), patternlength, badchar);
+        charShifter.Run(pattern, patternlength, badchar);
         int length_index = 0;
 
         while (length_index <= (filelength - patternlength)) {
             int pattern_index = patternlength - 1;
-            while (pattern_index >= 0 && pattern.charAt(pattern_index) == file.charAt(length_index + pattern_index) && pattern.charAt(0) == file.charAt(length_index)) //--- Match ---//
+            while (pattern_index >= 0 && pattern.charAt(pattern_index) == file.charAt(length_index + pattern_index)
+                    && pattern.charAt(0) == file.charAt(length_index)) // --- Match ---//
                 pattern_index--;
-            if (pattern_index < 0) { //--- Mismatch ---//
+            if (pattern_index < 0) { // --- Mismatch ---//
                 System.out.println("Patterns occur at index = " + length_index);
-                length_index += (length_index + patternlength < filelength) ? patternlength - badchar[file.charAt(length_index + patternlength)] : 1;
+                length_index += (length_index + patternlength < filelength)
+                        ? patternlength - badchar[file.charAt(length_index + patternlength)]
+                        : 1;
             } else
-                length_index += max(1, pattern_index - badchar[file.charAt(length_index + pattern_index)]);
+                // Return Num of pattern found in file
+                length_index += FindMaxNum.Run(1, pattern_index - badchar[file.charAt(length_index + pattern_index)]);
         }
         long end = System.nanoTime();
         long elapsedTime = end - start;
         System.out.println("Time Taken for Boyers Moore: " + elapsedTime);
     }
-//------------------------------------------------------- BNDM ------------------------------------------------------
-    public static void printLastOcc(int[] lastOcc) {
-        int i, j = 0;
+    // --------------------------------------- KMP --------------------------------------------------
 
-        System.out.println();
-        for (i = (int) 'a'; i <= (int) 'z'; i++) {
-            System.out.print((char) i + " " + lastOcc[i] + "; ");
-            if (++j % 13 == 0)
-                System.out.println();
-        }
-        System.out.println();
-        System.out.println();
-    }
+    public static void KMP(String file, String pattern) {
+        //Create function to Find Sub Patterns in the text
+        CreateVoidFunction FindPrepocessingPattern = (pat, patternlength, lpsarr) -> {
+            // length of the previous longest prefix suffix
+            int len = 0;
+            int i = 1;
+            lpsarr[0] = 0; // lps[0] is always 0
+            // the loop calculates lps[i] for i = 1 to M-1
+            while (i < patternlength) {
+                if (pat.charAt(i) == pat.charAt(len)) {
+                    len++;
+                    lpsarr[i] = len;
+                    i++;
+                } else // (pat[i] != pat[len])
+                {
+                    // This is tricky. Consider the example.
+                    // AAACAAAA and i = 7. The idea is similar
+                    // to search step.
+                    if (len != 0) {
+                        len = lpsarr[len - 1];
 
-    public static void BNDM(String file, String pattern) {
-        long start = System.nanoTime();
-        if (pattern.length() == file.length() && pattern.equals(file)) {
-            System.out.println("Sequence = Source");
-        }
-
-        char[] x = pattern.toCharArray(), y = pattern.toCharArray();
-        int i, j, s, d, last, m = x.length, n = y.length;
-        int[] b = new int[256];
-        //----- initalize empty list with 0
-        for (i = 0; i < b.length; i++) {
-            b[i] = 0;
-        }
-        s = 1;
-        //-------- Set pattern to bitwise -----------
-        for (i = m - 1; i >= 0; i--) {
-            b[x[i]] |= s;
-            s <<= 1;
-        }
-
-        j = 0;
-        while (j <= n - m) {
-            i = m - 1;
-            last = m;
-            d = ~0;
-            while (i >= 0 && d != 0) {
-                d &= b[y[j + i]];
-                i--;
-                if (d != 0) {
-                    if (i >= 0) {
-                        last = i + 1;
-                    } else {
-                        System.out.println("Pattern found in starting from index: " + j);
+                        // Also, note that we do not increment
+                        // i here
+                    } else // if (len == 0)
+                    {
+                        lpsarr[i] = len;
+                        i++;
                     }
                 }
-                d <<= 1;
             }
-            j += last;
+        };
+        long start = System.nanoTime();
+        int M = pattern.length();
+        int N = file.length();
+
+        // create lps[] that will hold the longest
+        // prefix suffix values for pattern
+        int lps[] = new int[M];
+        int j = 0; // index for pat[]
+
+        // Preprocess the pattern (calculate lps[] array)
+        FindPrepocessingPattern.Run(pattern, M, lps);
+
+        int i = 0; // index for txt[]
+        while (i < N) {
+            if (pattern.charAt(j) == file.charAt(i)) {
+                j++;
+                i++;
+            }
+            if (j == M) {
+                System.out.println("Found pattern " + "at index " + (i - j));
+                j = lps[j - 1];
+            }
+
+            // mismatch after j matches
+            else if (i < N && pattern.charAt(j) != file.charAt(i)) {
+                // Do not match lps[0..lps[j-1]] characters,
+                // they will match anyway
+                if (j != 0)
+                    j = lps[j - 1];
+                else
+                    i = i + 1;
+            }
         }
         long end = System.nanoTime();
         long elapsedTime = end - start;
-        System.out.println("Time Taken for BNDM: " + elapsedTime);
+        System.out.println("Time Taken for Boyers Moore: " + elapsedTime);
     }
-//--------------------------------------- KMP --------------------------------------------------
 
-static void computeLPSArray(String pat, int M, int lps[]) 
-{ 
-    // length of the previous longest prefix suffix 
-    int len = 0; 
-    int i = 1; 
-    lps[0] = 0; // lps[0] is always 0 
-
-    // the loop calculates lps[i] for i = 1 to M-1 
-    while (i < M) { 
-        if (pat.charAt(i) == pat.charAt(len)) { 
-            len++; 
-            lps[i] = len; 
-            i++; 
-        } 
-        else // (pat[i] != pat[len]) 
-        { 
-            // This is tricky. Consider the example. 
-            // AAACAAAA and i = 7. The idea is similar 
-            // to search step. 
-            if (len != 0) { 
-                len = lps[len - 1]; 
-
-                // Also, note that we do not increment 
-                // i here 
-            } 
-            else // if (len == 0) 
-            { 
-                lps[i] = len; 
-                i++; 
-            } 
-        } 
-    } 
-} 
-    public static void KMP(String file, String pattern) {
-        int M = pattern.length(); 
-        int N = file.length(); 
-  
-        // create lps[] that will hold the longest 
-        // prefix suffix values for pattern 
-        int lps[] = new int[M]; 
-        int j = 0; // index for pat[] 
-  
-        // Preprocess the pattern (calculate lps[] 
-        // array) 
-        computeLPSArray(pattern, M, lps); 
-  
-        int i = 0; // index for txt[] 
-        while (i < N) { 
-            if (pattern.charAt(j) == file.charAt(i)) { 
-                j++; 
-                i++; 
-            } 
-            if (j == M) { 
-                System.out.println("Found pattern "
-                                   + "at index " + (i - j)); 
-                j = lps[j - 1]; 
-            } 
-  
-            // mismatch after j matches 
-            else if (i < N && pattern.charAt(j) != file.charAt(i)) { 
-                // Do not match lps[0..lps[j-1]] characters, 
-                // they will match anyway 
-                if (j != 0) 
-                    j = lps[j - 1]; 
-                else
-                    i = i + 1; 
-            } 
-        } 
-    }
-    
 }
