@@ -76,11 +76,6 @@ public class SearchAlgo {
     }
     // ---------------------------------------------- Boyers Moore
     // -------------------------------------------------//
-
-    static int max(int a, int b) { // Return Num of pattern found in file
-        return (a > b) ? a : b;
-    }
-
     public static void BoyersMoore(String file, String pattern) {
         // Create a function to shift pattern to the right when character is mismatched
         // (Java 8 Style)
