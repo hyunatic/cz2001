@@ -42,7 +42,7 @@ public class SearchAlgo {
 
     // -------------- Reading external text file ---------//
     public static String ReadFile() throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader("Testing.txt"));
+        BufferedReader reader = new BufferedReader(new FileReader("Template.txt"));
         StringBuilder stringBuilder = new StringBuilder();
         try {
             while (reader.readLine() != null) {
@@ -185,7 +185,7 @@ public class SearchAlgo {
         }
         long end = System.nanoTime();
         long elapsedTime = end - start;
-        System.out.println("Time Taken for Boyers Moore: " + elapsedTime);
+        System.out.println("Time Taken for KMP: " + elapsedTime);
     }
 
 }
