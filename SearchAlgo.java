@@ -124,30 +124,26 @@ public class SearchAlgo {
 
     public static void KMP(String file, String pattern) {
         //Create function to Find Sub Patterns in the text
+        //Calculate the lps array
         CreateVoidReturnFunction FindPrepocessingPattern = (pat, patternlength, lpsarr) -> {
             // length of the previous longest prefix suffix
-            int len = 0;
+            int length = 0;
             int i = 1;
             lpsarr[0] = 0; // lps[0] is always 0
             // the loop calculates lps[i] for i = 1 to M-1
             while (i < patternlength) {
-                if (pat.charAt(i) == pat.charAt(len)) {
-                    len++;
-                    lpsarr[i] = len;
+                if (pat.charAt(i) == pat.charAt(length)) {
+                    length++;
+                    lpsarr[i] = length;
                     i++;
-                } else // (pat[i] != pat[len])
-                {
-                    // This is tricky. Consider the example.
+                } else{
+                    // Consider the example.
                     // AAACAAAA and i = 7. The idea is similar
                     // to search step.
-                    if (len != 0) {
-                        len = lpsarr[len - 1];
-
-                        // Also, note that we do not increment
-                        // i here
-                    } else // if (len == 0)
-                    {
-                        lpsarr[i] = len;
+                    if (length != 0) {
+                        length = lpsarr[length - 1];
+                    } else{
+                        lpsarr[i] = length;
                         i++;
                     }
                 }
@@ -178,9 +174,8 @@ public class SearchAlgo {
 
             // mismatch after j matches
             else if (i < N && pattern.charAt(j) != file.charAt(i)) {
-                // Do not match lps[0..lps[j-1]] characters,
-                // they will match anyway
-                if (j != 0)
+                //Make comparison on mismatched text char with the list
+                if (j != 0 && pattern.indexOf(file.charAt(i)) != 1) 
                     j = lps[j - 1];
                 else
                     i = i + 1;
