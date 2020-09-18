@@ -156,29 +156,28 @@ public class SearchAlgo {
         // create lps[] that will hold the longest
         // prefix suffix values for pattern
         int lps[] = new int[M];
-        int j = 0; // index for pat[]
+        int pattern_index = 0; // index for pat[]
 
         // Preprocess the pattern (calculate lps[] array)
         FindPrepocessingPattern.Run(pattern, M, lps);
 
-        int i = 0; // index for txt[]
-        while (i < N) {
-            if (pattern.charAt(j) == file.charAt(i)) {
-                j++;
-                i++;
+        int text_index = 0; // index for txt[]
+        while (text_index < N) {
+            if (pattern.charAt(pattern_index) == file.charAt(text_index)) {
+                pattern_index++;
+                text_index++;
             }
-            if (j == M) {
-                System.out.println("Found pattern " + "at index " + (i - j));
-                j = lps[j - 1];
+            if (pattern_index == M) {
+                System.out.println("Found pattern " + "at index " + (text_index - pattern_index));
+                pattern_index = lps[pattern_index - 1];
             }
-
             // mismatch after j matches
-            else if (i < N && pattern.charAt(j) != file.charAt(i)) {
+            else if (text_index < N && pattern.charAt(pattern_index) != file.charAt(text_index)) {
                 //Make comparison on mismatched text char with the list
-                if (j != 0 && pattern.indexOf(file.charAt(i)) != 1) 
-                    j = lps[j - 1];
+                if (pattern_index != 0 && pattern.indexOf(file.charAt(text_index)) != 1) 
+                    pattern_index = lps[pattern_index - 1];
                 else
-                    i = i + 1;
+                    text_index = text_index + 1;
             }
         }
         long end = System.nanoTime();
