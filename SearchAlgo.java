@@ -105,16 +105,19 @@ public class SearchAlgo {
         while (length_index <= (filelength - patternlength)) {
             int pattern_index = patternlength - 1;
             while (pattern_index >= 0 && pattern.charAt(pattern_index) == file.charAt(length_index + pattern_index)
-                    && pattern.charAt(0) == file.charAt(length_index)) // --- Match ---//
+                    && pattern.charAt(0) == file.charAt(length_index)) 
                 pattern_index--;
-            if (pattern_index < 0) { // --- Mismatch ---//
+                // --- Match ---//
+            if (pattern_index < 0) {
                 System.out.println("Patterns occur at index = " + length_index);
                 length_index += (length_index + patternlength < filelength)
                         ? patternlength - badchar[file.charAt(length_index + patternlength)]
                         : 1;
             } else
-                // Return Num of pattern found in file
                 length_index += FindMaxNum.Run(1, pattern_index - badchar[file.charAt(length_index + pattern_index)]);
+                // --- Mismatch ---//
+                // Return Num of pattern found in file
+               
         }
         long end = System.nanoTime();
         long elapsedTime = end - start;
