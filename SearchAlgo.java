@@ -104,8 +104,7 @@ public class SearchAlgo {
 
         while (length_index <= (filelength - patternlength)) {
             int pattern_index = patternlength - 1;
-            while (pattern_index >= 0 && pattern.charAt(pattern_index) == file.charAt(length_index + pattern_index)
-                    && pattern.charAt(0) == file.charAt(length_index)) 
+            while (pattern_index >= 0 && pattern.charAt(pattern_index) == file.charAt(length_index + pattern_index) && pattern.charAt(0) == file.charAt(length_index)) 
                 pattern_index--;
                 // --- Match ---//
             if (pattern_index < 0) {
