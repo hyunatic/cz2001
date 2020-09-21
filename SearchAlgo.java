@@ -62,17 +62,20 @@ public class SearchAlgo {
     // ----------------------------------------------------------//
     public static void BruteForce(String text, String input) {
         long start = System.nanoTime();
-
+        boolean found = false;
         System.out.println("Searching Pattern: " + input);
         for (int i = 0; i < text.length() - input.length(); i++) {
             String charIterator = text.substring(i, i + input.length());
-            if (input.equals(charIterator))
+            if (input.equals(charIterator)){
                 System.out.println("Pattern Found in index: " + i);
+                found = true;
+            }
         }
 
         long end = System.nanoTime();
         long elapsedTime = end - start;
         System.out.println("Time Taken for Brute Force: " + elapsedTime);
+        if (!found){System.out.println("No matches found.");}
     }
     // ---------------------------------------------- Boyers Moore
     // -------------------------------------------------//
@@ -97,7 +100,7 @@ public class SearchAlgo {
         long start = System.nanoTime();
         int patternlength = pattern.length();
         int filelength = file.length();
-
+        boolean found = false;
         int badchar[] = new int[256];
         charShifter.Run(pattern, patternlength, badchar);
         int length_index = 0;
@@ -108,6 +111,7 @@ public class SearchAlgo {
                 pattern_index--;
                 // --- Match ---//
             if (pattern_index < 0) {
+                found = true;
                 System.out.println("Patterns occur at index = " + length_index);
                 length_index += (length_index + patternlength < filelength)
                         ? patternlength - badchar[file.charAt(length_index + patternlength)]
@@ -121,6 +125,7 @@ public class SearchAlgo {
         long end = System.nanoTime();
         long elapsedTime = end - start;
         System.out.println("Time Taken for Boyers Moore: " + elapsedTime);
+        if (!found){ System.out.println("No matches found");}
     }
     // --------------------------------------- KMP --------------------------------------------------
 
@@ -159,7 +164,7 @@ public class SearchAlgo {
         // prefix suffix values for pattern
         int lps[] = new int[M];
         int pattern_index = 0; // index for pat[]
-
+        boolean found = false;
         // Preprocess the pattern (calculate lps[] array)
         FindPrepocessingPattern.Run(pattern, M, lps);
 
@@ -172,6 +177,7 @@ public class SearchAlgo {
             if (pattern_index == M) {
                 System.out.println("Found pattern " + "at index " + (text_index - pattern_index));
                 pattern_index = lps[pattern_index - 1];
+                found = true;
             }
             // mismatch after j matches
             else if (text_index < N && pattern.charAt(pattern_index) != file.charAt(text_index)) {
@@ -185,6 +191,7 @@ public class SearchAlgo {
         long end = System.nanoTime();
         long elapsedTime = end - start;
         System.out.println("Time Taken for KMP: " + elapsedTime);
+        if (!found){System.out.println("No matches found.");}
     }
 
 }
