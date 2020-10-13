@@ -1,5 +1,5 @@
 from __future__ import print_function
-from Nodemap import GenerateNetworkMap, PrintGraph, getHospital, getStart
+from Nodemap import *
 from heapq import heappush, heappop
 from itertools import count
 import networkx as nx
@@ -75,6 +75,8 @@ def AStarSearch(G, source, target, heuristic=None):
     raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
 
 if __name__=="__main__":
-	networkmap = GenerateNetworkMap()
-	path = AStarSearch(networkmap, getStart(), getHospital())
-	PrintGraph(networkmap. path)
+    networkmap = GenerateNetworkMap()
+    path = AStarSearch(networkmap, getStart(), getHospital())
+    #edges = ConvertNodeToEdge(path)
+    edges = nx.shortest_path(networkmap, getStart(), getHospital())
+    PrintGraph(networkmap, edges)
