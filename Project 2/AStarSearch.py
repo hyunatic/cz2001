@@ -1,71 +1,80 @@
 from __future__ import print_function
-import matplotlib.pyplot as plt
-from Graph import AStarGraph
+from Nodemap import GenerateNetworkMap, PrintGraph, getHospital, getStart
+from heapq import heappush, heappop
+from itertools import count
+import networkx as nx
  
-def AStarSearch(start, end, graph):
- 
-	G = {} #Actual movement cost to each position from the start position
-	F = {} #Estimated movement cost of start to end going via this position
- 
-	#Initialize starting values
-	G[start] = 0 
-	F[start] = graph.heuristic(start, end)
- 
-	closedVertices = set()
-	openVertices = set([start])
-	cameFrom = {}
- 
-	while len(openVertices) > 0:
-		#Get the vertex in the open list with the lowest F score
-		current = None
-		currentFscore = None
-		for pos in openVertices:
-			if current is None or F[pos] < currentFscore:
-				currentFscore = F[pos]
-				current = pos
- 
-		#Check if we have reached the goal
-		if current == end:
-			#Retrace our route backward
-			path = [current]
-			while current in cameFrom:
-				current = cameFrom[current]
-				path.append(current)
-			path.reverse()
-			return path, F[end] #Done!
- 
-		#Mark the current vertex as closed
-		openVertices.remove(current)
-		closedVertices.add(current)
- 
-		#Update scores for vertices near the current position
-		for neighbour in graph.get_vertex_neighbours(current):
-			if neighbour in closedVertices: 
-				continue #We have already processed this node exhaustively
-			candidateG = G[current] + graph.move_cost(current, neighbour)
- 
-			if neighbour not in openVertices:
-				openVertices.add(neighbour) #Discovered a new vertex
-			elif candidateG >= G[neighbour]:
-				continue #This G score is worse than previously found
- 
-			#Adopt this G score
-			cameFrom[neighbour] = current
-			G[neighbour] = candidateG
-			H = graph.heuristic(neighbour, end)
-			F[neighbour] = G[neighbour] + H
- 
-	raise RuntimeError("A* failed to find a solution")
- 
+def AStarSearch(G, source, target, heuristic=None):
+    if source not in G or target not in G:
+        msg = f"Either source {source} or target {target} is not in G"
+        raise nx.NodeNotFound(msg)
+
+    if heuristic is None:
+        # The default heuristic is h=0 - same as Dijkstra's algorithm
+        def heuristic(u, v):
+            return 0
+
+    push = heappush
+    pop = heappop
+
+    # The queue stores priority, node, cost to reach, and parent.
+    # Uses Python heapq to keep in priority order.
+    # Add a counter to the queue to prevent the underlying heap from
+    # attempting to compare the nodes themselves. The hash breaks ties in the
+    # priority and is guaranteed unique for all nodes in the graph.
+    c = count()
+    queue = [(0, next(c), source, 0, None)]
+
+    # Maps enqueued nodes to distance of discovered paths and the
+    # computed heuristics to target. We avoid computing the heuristics
+    # more than once and inserting the node into the queue too many times.
+    enqueued = {}
+    # Maps explored nodes to parent closest to the source.
+    explored = {}
+
+    while queue:
+        # Pop the smallest item from queue.
+        _, __, curnode, dist, parent = pop(queue)
+
+        if curnode == target:
+            path = [curnode]
+            node = parent
+            while node is not None:
+                path.append(node)
+                node = explored[node]
+            path.reverse()
+            return path
+
+        if curnode in explored:
+            # Do not override the parent of starting node
+            if explored[curnode] is None:
+                continue
+
+            # Skip bad paths that were enqueued before finding a better one
+            qcost, h = enqueued[curnode]
+            if qcost < dist:
+                continue
+
+        explored[curnode] = parent
+
+        for neighbor, w in G[curnode].items():
+            ncost = dist
+            if neighbor in enqueued:
+                qcost, h = enqueued[neighbor]
+                # if qcost <= ncost, a less costly path from the
+                # neighbor to the source was already determined.
+                # Therefore, we won't attempt to push this neighbor
+                # to the queue
+                if qcost <= ncost:
+                    continue
+            else:
+                h = heuristic(neighbor, target)
+            enqueued[neighbor] = ncost, h
+            push(queue, (ncost + h, next(c), neighbor, ncost, curnode))
+
+    raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
+
 if __name__=="__main__":
-	graph = AStarGraph()
-	result, cost = AStarSearch((0,0), (50,50), graph)
-	print ("route", result)
-	print ("cost", cost)
-	plt.plot([v[0] for v in result], [v[1] for v in result])
-	for barrier in graph.barriers:
-		plt.plot([v[0] for v in barrier], [v[1] for v in barrier], 'ro')
-	plt.xlim(-1,51)
-	plt.ylim(-1,51)
-	plt.grid(True)
-	plt.show()
+	networkmap = GenerateNetworkMap()
+	path = AStarSearch(networkmap, getStart(), getHospital())
+	PrintGraph(networkmap. path)
