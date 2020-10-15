@@ -77,6 +77,6 @@ def AStarSearch(G, source, target, heuristic=None):
 if __name__=="__main__":
     networkmap = GenerateNetworkMap()
     path = AStarSearch(networkmap, getStart(), getHospital())
-    #edges = ConvertNodeToEdge(path)
-    edges = nx.shortest_path(networkmap, getStart(), getHospital())
+    edges = ConvertNodeToEdge(path)
+    #edges = nx.shortest_path(networkmap, getStart(), getHospital())
     PrintGraph(networkmap, edges)

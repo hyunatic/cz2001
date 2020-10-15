@@ -26,6 +26,7 @@ def getHospital():
 
 def PrintGraph(networkgraph, edges):
     color_map = []
+    color_edge = []
     for node in networkgraph:
         if node == getHospital():
             color_map.append('red')
@@ -33,14 +34,33 @@ def PrintGraph(networkgraph, edges):
             color_map.append('blue')
         else: 
             color_map.append('green')
-            
-    nx.draw(networkgraph, node_color=color_map, with_labels=True)
+    
+    for path in edges:
+        for edge in networkgraph.edges:
+            #print(edge , path)
+            if edge == path:
+                #print('match')        
+                color_edge.append('blue')
+            else:
+                color_edge.append('black')
+    #print(color_edge)
+    nx.draw(networkgraph, node_color=color_map, edge_color=color_edge ,with_labels=True)
  
     plt.show()
 
 def ConvertNodeToEdge(path):
+    path = SortnConvert(path)
     edges = []
     for i in range(0,len(path)-1):
         single_edge = (path[i],path[i+1])
         edges.append(single_edge)
     return edges
+def SortnConvert(path):
+    # selection sort 
+    for i in range(len(path)-1):  
+        min_id = i 
+        for j in range(i+1, len(path)): 
+            if path[min_id] > path[j]: 
+                min_id = j         
+        path[i], path[min_id] = path[min_id], path[i]
+    return path
