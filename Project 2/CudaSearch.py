@@ -12,20 +12,17 @@ def ConvertToAdjMatrix(arr1):
     
     cpSortedArr = arr1[arr1[:,0].argsort()]
 
-    arr = cp.zeros(size, dtype="int32")
-    print(arr)
+    arr = cp.zeros(size, dtype="int32").tolist()
     cur = -1
     with open("matrixList.txt", 'ab') as f:
         for row,col in cpSortedArr:
             if(cur != row):
-                NpSortedArr = np.array(arr.get())
-                np.savetxt("matrixList.txt", NpSortedArr, delimiter=" ", fmt="%s")
+                np.savetxt("matrixList.txt", arr, delimiter=" ", fmt="%s")
                 cur = row
-                arr = cp.zeros(size, dtype="int32")
-            arr[row][col] = 1
+                arr = cp.zeros(size, dtype="int32").tolist()
+            arr[col.get()] = 1
         else:
-            NpSortedArr = np.array(arr.get())
-            np.savetxt("matrixList.txt", NpSortedArr, delimiter=" ", fmt="%s")
+            np.savetxt("matrixList.txt", arr, delimiter=" ", fmt="%s")
             
 
 def ConvertToAdjList(arr1):
