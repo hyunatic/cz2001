@@ -1,19 +1,6 @@
 import cupy as cp
-import time
 
-iterations = 1000000
-loops = 10;
-stack = iterations // loops
-
-a = cp.random.rand(stack,44,20)
-b = cp.random.rand(stack,20,1)
-
-def ab(a,b,iterations):
-    for i in range(iterations):
-        cp.matmul(a,b,out=None)
-
-t1 = time.time()
-ab(a,b,loops)
-t2 = time.time()
-total = t2-t1
-print(total)
+arr2D = cp.array([[21,7,23,14], [11,10,33,7] ,[11,12,13,22]])
+sorting = arr2D[arr2D[:,0].argsort()]
+print('2D Numpy Array')
+print(sorting)
