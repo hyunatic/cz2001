@@ -35,6 +35,7 @@ def AStarSearch(G, source, target, heuristic=None):
     while queue:
         # Pop the smallest item from queue.
         _, __, curnode, dist, parent = pop(queue)
+        print(queue)
 
         if curnode == target:
             path = [curnode]
