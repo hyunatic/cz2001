@@ -5,6 +5,7 @@ from itertools import count
 import numpy as np
 import cupy as cp
 import networkx as nx
+from timeit import default_timer as timer    
  
 def AStarSearch(G, source, target, heuristic=None):
     if source not in G or target not in G:
@@ -77,34 +78,40 @@ def AStarSearch(G, source, target, heuristic=None):
     raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
 
 def ReadFile():
-    edge = np.loadtxt("test.txt", dtype="int32", skiprows=1)
+    edge = np.loadtxt("roadNet-PA.txt", dtype="int32", skiprows=4)
     array = np.array(edge)
     return array
 
 def Convert(arr1):
-    array = cp.array(arr1)
-
-    unique = cp.unique(array)
-    size = cp.unique(array).size
+    size = cp.unique(arr1).size
     
     arr = cp.zeros(size, dtype="int32")
-    r = cp.zeros(size, dtype="int32")
 
     #Create [[0,0,0,0,0], [0,0,0,0,0]]
-    #size = total Unique elements 
-    for i in range(size):
-        arr = np.vstack((arr,r))
+    #size = total Unique elements
+    print(size // 20)
+    #arr1 = cp.tile(arr, (size,1))
 
-    print(array.size)
-    solution = cp.argwhere(array == 0)
-    # for row,col in array:
-    #     print(row,col)
+    # for row,col in arr1:
     #     arr[row][col] = 1
     # return arr
 
 if __name__=="__main__":
-    array = ReadFile()
-    matrix = Convert(array)
+    start = timer() 
+    nparray = ReadFile()
+    print("Read File Done", timer()-start) 
+
+    start = timer() 
+    cparray = cp.array(nparray)
+    print("Cuda Array Done", timer()-start)
+
+    size = cp.unique(cparray).size
+
+    # start = timer() 
+    matrix = Convert(cparray)
+    # print("Process Done", timer()-start)
+
+
     # networkmap = NetworkMapFromFile(matrix)
     # path = AStarSearch(networkmap, getStart(), getHospital())
     # edges = ConvertNodeToEdge(path)

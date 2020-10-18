@@ -1,8 +1,19 @@
-import numpy as np
+import cupy as cp
+import time
 
-ints = [[9,9], [8,8], [10,10], [12,12], [20,20]]
-arr = np.array(ints)
-solution = np.argwhere(arr == 9)
-print(solution)
-for i,j in solution:
-     print(i,j)
+iterations = 1000000
+loops = 10;
+stack = iterations // loops
+
+a = cp.random.rand(stack,44,20)
+b = cp.random.rand(stack,20,1)
+
+def ab(a,b,iterations):
+    for i in range(iterations):
+        cp.matmul(a,b,out=None)
+
+t1 = time.time()
+ab(a,b,loops)
+t2 = time.time()
+total = t2-t1
+print(total)
