@@ -9,21 +9,24 @@ def ReadFile():
 
 def ConvertToAdjMatrix(arr1):
     size = cp.unique(arr1).size
-    #arr = cp.zeros(size, dtype="int32")
-    cpSortedArr = arr1[arr1[:,0].argsort()]
-    NpSortedArr = np.array(cpSortedArr.get())
     
-    #Create [[0,0,0,0,0], [0,0,0,0,0]]
-    #size = total Unique elements
-    #row / column
-    # arr = cp.tile(arr,(size,1))
+    cpSortedArr = arr1[arr1[:,0].argsort()]
 
-    # for row,col in arr1:
-    #     arr[row][col] = 1
+    arr = cp.zeros(size, dtype="int32")
+    print(arr)
+    cur = -1
     with open("matrixList.txt", 'ab') as f:
-        for row,col in arr1:
-            arr1[row][col] = 1
+        for row,col in cpSortedArr:
+            if(cur != row):
+                NpSortedArr = np.array(arr.get())
+                np.savetxt("matrixList.txt", NpSortedArr, delimiter=" ", fmt="%s")
+                cur = row
+                arr = cp.zeros(size, dtype="int32")
+            arr[row][col] = 1
+        else:
+            NpSortedArr = np.array(arr.get())
             np.savetxt("matrixList.txt", NpSortedArr, delimiter=" ", fmt="%s")
+            
 
 def ConvertToAdjList(arr1):
     cpSortedArr = arr1[arr1[:,0].argsort()]
@@ -52,4 +55,4 @@ if __name__=="__main__":
     cparray = cp.array(nparray)
     print("Cuda Array Done", timer()-start)
 
-    adjList = ConvertToAdjList(cparray)
+    adjList = ConvertToAdjMatrix(cparray)
