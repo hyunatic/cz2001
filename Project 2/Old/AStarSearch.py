@@ -3,21 +3,10 @@ from Nodemap import *
 from heapq import heappush, heappop
 from itertools import count
 import networkx as nx
-from Networkx import *
  
-def AStarSearch(graph, source, target, heuristic=None):
-    t=100
-    for x in target:
-        dis = resistance_distance(graph,source,x)
-        #print("get")
-        #print(x)
-        #print(dis)
-        
-        if(t > dis):
-            t = dis
-            tar = x
-    if source not in graph or tar not in graph:
-        msg = f"Either source {source} or target {target} is not in graph"
+def AStarSearch(G, source, target, heuristic=None):
+    if source not in G or target not in G:
+        msg = f"Either source {source} or target {target} is not in G"
         raise nx.NodeNotFound(msg)
 
     if heuristic is None:
@@ -27,8 +16,6 @@ def AStarSearch(graph, source, target, heuristic=None):
 
     push = heappush
     pop = heappop
-    
-    
 
     # The queue stores priority, node, cost to reach, and parent.
     # Uses Python heapq to keep in priority order.
@@ -43,39 +30,35 @@ def AStarSearch(graph, source, target, heuristic=None):
     # more than once and inserting the node into the queue too many times.
     enqueued = {}
     # Maps explored nodes to parent closest to the source.
-    explorednodes = {}
-    
+    explored = {}
+
     while queue:
-    # Pop the smallest item from queue
-        _, __, current, dist, parent = pop(queue)
+        # Pop the smallest item from queue.
+        _, __, curnode, dist, parent = pop(queue)
         print(queue)
-       
-        
-        if current == tar:
-            path = [current]
+
+        if curnode == target:
+            path = [curnode]
             node = parent
             while node is not None:
                 path.append(node)
-                node = explorednodes[node]
+                node = explored[node]
             path.reverse()
-            print("Path taken")
-            for tar in path:
-                print(tar)
             return path
 
-        if current in explorednodes:
+        if curnode in explored:
             # Do not override the parent of starting node
-            if explorednodes[current] is None:
+            if explored[curnode] is None:
                 continue
 
             # Skip bad paths that were enqueued before finding a better one
-            qcost, h = enqueued[current]
+            qcost, h = enqueued[curnode]
             if qcost < dist:
                 continue
 
-        explorednodes[current] = parent
+        explored[curnode] = parent
 
-        for neighbor, w in graph[current].items():
+        for neighbor, w in G[curnode].items():
             ncost = dist
             if neighbor in enqueued:
                 qcost, h = enqueued[neighbor]
@@ -86,16 +69,16 @@ def AStarSearch(graph, source, target, heuristic=None):
                 if qcost <= ncost:
                     continue
             else:
-                h = heuristic(neighbor, tar)
-                
+                h = heuristic(neighbor, target)
             enqueued[neighbor] = ncost, h
-            push(queue, (ncost + h, next(c), neighbor, ncost, current))
+            push(queue, (ncost + h, next(c), neighbor, ncost, curnode))
 
     raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
 
 if __name__=="__main__":
-    nwmap = GenerateNetworkMap()
-    path = AStarSearch(nwmap, getStart(), getHospital())
+    networkmap = GenerateNetworkMap()
+    path = AStarSearch(networkmap, getStart(), getHospital())
     edges = ConvertNodeToEdge(path)
     #edges = nx.shortest_path(networkmap, getStart(), getHospital())
-    PrintGraph(nwmap, edges)
+    PrintGraph(networkmap, edges)
+   

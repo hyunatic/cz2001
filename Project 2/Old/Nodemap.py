@@ -3,22 +3,15 @@ import matplotlib.pyplot as plt
 import random
 
 start = 0
-hospital = []
+hospital = 0
 
 def GenerateNetworkMap():
     nodes = random.randrange(10,20)
     edges = random.randrange(9,60)
-    
 
     a = nx.gnm_random_graph(nodes, edges,random.randrange(5))
     global hospital
-    randlist = random.sample(range(len(list(a))), 3)
-
-    for x in randlist:
-        hospital.append(x)
-        #hospital.append(random.randrange(len(list(a))))
-    
-    
+    hospital = random.randrange(len(list(a)))
     while True:
         global start
         start = random.randrange(len(list(a)))
@@ -35,9 +28,7 @@ def PrintGraph(networkgraph, edges):
     color_map = []
     color_edge = []
     for node in networkgraph:
-       
-       
-        if (node in hospital):
+        if node == getHospital():
             color_map.append('red')
         elif node == getStart():
             color_map.append('blue')
@@ -50,9 +41,9 @@ def PrintGraph(networkgraph, edges):
             if edge == path:
                 #print('match')        
                 color_edge.append('blue')
+                continue
             else:
                 color_edge.append('black')
-        
     #print(color_edge)
     nx.draw(networkgraph, node_color=color_map, edge_color=color_edge ,with_labels=True)
  
@@ -64,9 +55,6 @@ def ConvertNodeToEdge(path):
     for i in range(0,len(path)-1):
         single_edge = (path[i],path[i+1])
         edges.append(single_edge)
-    #print("edges")
-    #for x in edges:
-        #print(edges)
     return edges
 def SortnConvert(path):
     # selection sort 
