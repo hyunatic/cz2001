@@ -15,11 +15,14 @@ def ReadFile():
 def FullAdjMatrix(arr1):
     #Device 1 is Asus Strix RTX 3090
     #cp.cuda.Device(1).use()
+    #Count number of nodes
     size = cp.unique(arr1).size
+    #Sort in ascending [[0,1], [1,2], [0,2]] >> [[0,1], [0,2], [1,2]]
     cpSortedArr = arr1[arr1[:,0].argsort()]
 
     #Device 0 is MSI Gaming X Trio RTX 3090
     #cp.cuda.Device(0).use()
+    #Initialize a [0,0,0,...,0] with a size of n in parallel
     arr = cp.zeros(size, dtype="int32")
     cur = 0
     #Don't uncomment this line, I'm using 2 GPU(s) on SLI to process
@@ -42,6 +45,7 @@ def CompressedAdjMatrix(arr1):
 
     #Device 0 is MSI Gaming X Trio RTX 3090
     #cp.cuda.Device(0).use()
+    #Initialize a [0,0,0,...,0] with a size of n in parallel
     arr = cp.zeros(size, dtype="int32")
     cur = 0
 
@@ -70,7 +74,7 @@ def ConvertToAdjList(arr1):
     adjList = [[] for k in range(node)]
 
     #Line 52 ~ 58 are executed in parallel
-    #Line 62 synchronizes my 2x 3090 on before continue the next part of the program
+    #Line 78 wait for both of my GPU to finish calculating for continuing to the next line
     #cp.cuda.Device({0,1}).synchronize()
     
     #Using both GPU to process at the same time

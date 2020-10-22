@@ -41,6 +41,7 @@ def PrintGraph(networkgraph, edges):
             if edge == path:
                 #print('match')        
                 color_edge.append('blue')
+                continue
             else:
                 color_edge.append('black')
     #print(color_edge)
