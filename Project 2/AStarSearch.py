@@ -81,4 +81,4 @@ if __name__=="__main__":
     edges = ConvertNodeToEdge(path)
     #edges = nx.shortest_path(networkmap, getStart(), getHospital())
     PrintGraph(networkmap, edges)
-    print(nx.astar_path(networkmap, getStart(), getHospital()))
+   
