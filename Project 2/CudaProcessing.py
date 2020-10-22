@@ -4,7 +4,6 @@ from timeit import default_timer as timer
 
 #I'm running on cupy-cuda11.0 
 #Please also install CUDA toolkit, in order to execute cupy python library
-#My is running on 
 
 def ReadFile():
     #Read VIA CPU and store into RAM
@@ -66,6 +65,7 @@ def ConvertToAdjList(arr1):
     #Device 1 is Asus Strix RTX 3090
     #cp.cuda.Device(1).use()
     cpSortedArr = arr1[arr1[:,0].argsort()]
+    #Split [[1,2],[1,3],[1,4]] > start [1,1,1] end [2,3,4]
     start,end = cp.hsplit(cpSortedArr, 2)
     node = cp.unique(cpSortedArr).size
     
