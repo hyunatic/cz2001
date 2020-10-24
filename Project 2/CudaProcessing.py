@@ -34,7 +34,7 @@ def FullAdjMatrix(arr1):
                 arr = cp.zeros(size, dtype="int32")
             arr[col.get()] = 1
         else:
-            np.savetxt("FullmatrixList.txt", cp.asnumpy(arr), newline=" ", fmt="%s")
+            np.savetxt("FullmatrixList.txt", cp.asnumpy(arr),header="[", footer="]", newline=" ", fmt="%s")
 
 def CompressedAdjMatrix(arr1):
     #Device 1 is Asus Strix RTX 3090
@@ -83,15 +83,18 @@ def ConvertToAdjList(arr1):
         u = int(start[i].get())
         v = int(end[i].get())
         adjList[u].append(v)
-    
+        
     np.savetxt("adjList.txt", adjList, delimiter=" ", fmt="%s")
+
+def TransferToGpu(nparray):
+    return cp.array(nparray)
 
 if __name__=="__main__":
     #Read file data into RAM
     nparray = ReadFile()
 
     #Transfer data into the GPU
-    cparray = cp.array(nparray)
+    cparray = TransferToGpu(nparray)
 
     #WARNING! DO NOT RUN THIS LINE UNLESS YOU WANT FULL MATRIX (1 MILLION X 1 MILLION)
     #matrixList = FullAdjMatrix(cparray)

@@ -4,6 +4,7 @@ from heapq import heappush, heappop
 from itertools import count
 import networkx as nx
 from Networkx import *
+
  
 def AStarSearch(graph, source, target, heuristic=None):
     t=100
@@ -28,7 +29,6 @@ def AStarSearch(graph, source, target, heuristic=None):
     push = heappush
     pop = heappop
     
-    
 
     # The queue stores priority, node, cost to reach, and parent.
     # Uses Python heapq to keep in priority order.
@@ -48,8 +48,6 @@ def AStarSearch(graph, source, target, heuristic=None):
     while queue:
     # Pop the smallest item from queue
         _, __, current, dist, parent = pop(queue)
-        print(queue)
-       
         
         if current == tar:
             path = [current]
@@ -96,6 +94,14 @@ def AStarSearch(graph, source, target, heuristic=None):
 if __name__=="__main__":
     nwmap = GenerateNetworkMap()
     path = AStarSearch(nwmap, getStart(), getHospital())
+
+    #Write path taken into a file
+    #Task A and B
+    with open("RandomGraphPath.txt", 'w') as f:
+        f.write(str(path) + "\n")
+    f.close() 
+
+    #Get Edge List
     edges = ConvertNodeToEdge(path)
-    #edges = nx.shortest_path(networkmap, getStart(), getHospital())
+    #Use Python library to display the GUI graph
     PrintGraph(nwmap, edges)

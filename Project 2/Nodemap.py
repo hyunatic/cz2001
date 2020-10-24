@@ -1,24 +1,40 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import random
+from CudaProcessing import ReadFile, TransferToGpu, ConvertToAdjList
 
 start = 0
 hospital = []
 
 def GenerateNetworkMap():
+    #Don't try to run this 
+    #Real Graph Data
+    # nparray = ReadFile()
+    # cparray = TransferToGpu(nparray)
+    # nodes = cp.unique(cparray)
+    # a = nx.Graph()
+    # a.add_nodes_from(nodes)
+    #cpSortedArr = cparray[cparray[:,0].argsort()]
+    # a.read_edgelist(cpSortedArr)
+
+    ##Comment till here if you don't want to test the real graph
+
+    #Random Graph
+    #Note: If program fails, keep retrying the graph
     nodes = random.randrange(10,20)
     edges = random.randrange(9,60)
-    
-
     a = nx.gnm_random_graph(nodes, edges,random.randrange(5))
+
+    ##Comment till here if you don't want to test the random graph
+
+    #Randomly pick hospital
     global hospital
     randlist = random.sample(range(len(list(a))), 3)
 
     for x in randlist:
         hospital.append(x)
         #hospital.append(random.randrange(len(list(a))))
-    
-    
+
     while True:
         global start
         start = random.randrange(len(list(a)))
