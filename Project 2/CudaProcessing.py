@@ -16,6 +16,8 @@ def FullAdjMatrix(arr1):
     #cp.cuda.Device(1).use()
     #Count number of nodes
     size = cp.unique(arr1).size
+    
+    #View Graph/sortedList.txt for cpSortedArr
     #Sort in ascending [[0,1], [1,2], [0,2]] >> [[0,1], [0,2], [1,2]]
     cpSortedArr = arr1[arr1[:,0].argsort()]
 
@@ -40,6 +42,8 @@ def CompressedAdjMatrix(arr1):
     #Device 1 is Asus Strix RTX 3090
     #cp.cuda.Device(1).use()
     size = cp.unique(arr1).size
+
+    #View Graph/sortedList.txt for cpSortedArr
     cpSortedArr = arr1[arr1[:,0].argsort()]
 
     #Device 0 is MSI Gaming X Trio RTX 3090
@@ -64,6 +68,8 @@ def CompressedAdjMatrix(arr1):
 def ConvertToAdjList(arr1):
     #Device 1 is Asus Strix RTX 3090
     #cp.cuda.Device(1).use()
+
+    #View Graph/sortedList.txt for cpSortedArr
     cpSortedArr = arr1[arr1[:,0].argsort()]
     #Split [[1,2],[1,3],[1,4]] > start [1,1,1] end [2,3,4]
     start,end = cp.hsplit(cpSortedArr, 2)
