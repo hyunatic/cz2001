@@ -79,12 +79,16 @@ def ConvertToAdjList(arr1):
     
     #Using both GPU to process at the same time
     #cp.cuda.Device({0,1}).use()
+   
     for i in range(node):
         u = int(start[i].get())
         v = int(end[i].get())
         adjList[u].append(v)
-        
-    np.savetxt("adjList.txt", adjList, delimiter=" ", fmt="%s")
+
+    
+    #np.savetxt("adjList.txt", adjList, delimiter=" ", fmt="%s")
+    return adjList
+    
 
 def TransferToGpu(nparray):
     return cp.array(nparray)
