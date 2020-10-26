@@ -4,6 +4,7 @@ from timeit import default_timer as timer
 
 #I'm running on cupy-cuda11.0 
 #Please also install CUDA toolkit, in order to execute cupy python library
+#Programmed by Iskandar
 
 def ReadFile():
     #Read VIA CPU and store into RAM

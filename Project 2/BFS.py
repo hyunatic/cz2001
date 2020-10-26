@@ -4,7 +4,6 @@ from collections import deque
 __all__ = [
     "bfs_edges",
     "bfs_tree",
-    "bfs_predecessors",
     "bfs_successors",
     "descendants_at_distance",
 ]
