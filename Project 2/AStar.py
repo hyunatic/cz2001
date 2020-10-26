@@ -55,9 +55,6 @@ def AStarSearch(graph, source, target, heuristic=None):
                 path.append(node)
                 node = explorednodes[node]
             path.reverse()
-            print("Path taken")
-            for tar in path:
-                print(tar)
             return path
 
         if current in explorednodes:

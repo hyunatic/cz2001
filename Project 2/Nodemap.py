@@ -14,7 +14,7 @@ def GenerateNetworkMap():
     # nodes = cp.unique(cparray)
     # a = nx.Graph()
     # a.add_nodes_from(nodes)
-    #cpSortedArr = cparray[cparray[:,0].argsort()]
+    # cpSortedArr = cparray[cparray[:,0].argsort()]
     # a.read_edgelist(cpSortedArr)
 
     ##Comment till here if you don't want to test the real graph

@@ -8,6 +8,7 @@ from AStar import AStarSearch
 ## This is for reference
 from BFS import *
 from DFS import *
+from timeit import default_timer as timer    
 
 
 #Programmed by Wayne and Yong Qiang
@@ -36,7 +37,7 @@ if __name__=="__main__":
     with open("RandomGraphPath.txt", 'w') as f:
         f.write(str(path) + "\n")
         ##Print total Distance
-        ##Since the graph is unweighted, default value is 1
+        ##Since the graph is unweighted, default edge value is 1
         #So we just take the length of the array
         f.write(str(len(path)) + "\n")
     f.close() 
